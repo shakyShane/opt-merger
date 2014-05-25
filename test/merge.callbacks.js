@@ -208,6 +208,70 @@ describe("Merging opts", function(){
         assert.equal(merged.open, false);
         assert.deepEqual(merged.names, "kittie");
     });
+    it("can merge options from command-line when it relies on other args", function () {
+
+        var defaultConf = {
+            proxy: false
+        };
+
+        argsStub.returns({
+            proxy: "localhost:8000",
+            startPath: "/app"
+        });
+
+        var funcs = {
+
+            "proxy": function (defaultValue, newValue, args) {
+
+                var proxy = {
+                    host: "localhost",
+                    port: "8000"
+                };
+
+                if (args.startPath) {
+                    proxy.startPath = args.startPath;
+                }
+
+                return proxy;
+            }
+        };
+
+        var merged = merge(defaultConf, {}, funcs);
+
+        assert.equal(merged.proxy.host, "localhost");
+        assert.equal(merged.proxy.port, "8000");
+        assert.equal(merged.proxy.startPath, "/app");
+    });
+    it("can merge options from config when it relies on other config args", function () {
+
+        var defaultConf = {
+            files: []
+        };
+
+        var config = {
+            files: "*.php",
+            exclude: "*.html"
+        };
+
+        var funcs = {
+
+            "files": function (defaultValue, newValue, args, config) {
+
+                var returnArr = [newValue];
+
+                if (config && config.exclude) {
+                    returnArr.push("!" + config.exclude)
+                }
+
+                return returnArr;
+            }
+        };
+
+        var merged = merge(defaultConf, config, funcs);
+
+        assert.deepEqual(merged.files, ["*.php", "!*.html"]);
+    });
+
 });
 
 
