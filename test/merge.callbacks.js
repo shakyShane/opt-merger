@@ -271,7 +271,32 @@ describe("Merging opts", function(){
 
         assert.deepEqual(merged.files, ["*.php", "!*.html"]);
     });
+    it("Does NOT merge options from config if not provided, but callback provided", function () {
 
+        var defaultConf = {
+            files: []
+        };
+
+        var config = {};
+
+        var funcs = {
+
+            "files": function (defaultValue, newValue, args, config) {
+
+                var returnArr = [newValue];
+
+                if (config && config.exclude) {
+                    returnArr.push("!" + config.exclude)
+                }
+
+                return returnArr;
+            }
+        };
+
+        var merged = merge(defaultConf, config, funcs);
+
+        assert.deepEqual(merged.files, []);
+    });
 });
 
 

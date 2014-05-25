@@ -44,6 +44,7 @@ module.exports.mergeOptions = function (defaults, config, callbacks) {
 
     Object.keys(callbacks).forEach(function (item) {
 
+        // item == "files" etc
         var newValue;
 
         if (args && typeof args[item] !== "undefined") {
@@ -52,12 +53,12 @@ module.exports.mergeOptions = function (defaults, config, callbacks) {
             newValue = config[item];
         }
 
-        if (callbacks[item] && typeof defaults[item] !== "undefined") {
-            defaults[item] = callbacks[item](defaults[item], newValue, args, config);
-        } else {
-            defaults[item] = newValue;
+        if (typeof newValue !== "undefined") {
+            if (callbacks[item] && typeof defaults[item] !== "undefined") {
+                // there's a callback, a default ARG & a newValue
+                defaults[item] = callbacks[item](defaults[item], newValue, args, config);
+            }
         }
-
     });
 
     return defaults;
