@@ -283,6 +283,9 @@ describe("Merging opts", function(){
 
             "files": function (defaultValue, newValue, args, config) {
 
+                if (!newValue) {
+                    return defaultValue;
+                }
                 var returnArr = [newValue];
 
                 if (config && config.exclude) {

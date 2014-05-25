@@ -53,11 +53,9 @@ module.exports.mergeOptions = function (defaults, config, callbacks) {
             newValue = config[item];
         }
 
-        if (typeof newValue !== "undefined") {
-            if (callbacks[item] && typeof defaults[item] !== "undefined") {
-                // there's a callback, a default ARG & a newValue
-                defaults[item] = callbacks[item](defaults[item], newValue, args, config);
-            }
+        if (callbacks[item] && typeof defaults[item] !== "undefined") {
+            // there's a callback, a default ARG & a newValue
+            defaults[item] = callbacks[item](defaults[item], newValue, args, config);
         }
     });
 
