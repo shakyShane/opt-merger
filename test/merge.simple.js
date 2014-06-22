@@ -29,6 +29,13 @@ describe("Merging opts", function(){
         var config = {
             name: "kittie",
             numbers: [4],
+            ghostMode: {
+                links: true,
+                forms: {
+                    submit: true,
+                    checkboxes: true
+                }
+            },
             user: {
                 password: "654321"
             },
@@ -47,6 +54,8 @@ describe("Merging opts", function(){
         assert.deepEqual(merged.user.email, "shane@gmail.com");
         assert.deepEqual(merged.user.password, "654321");
         assert.deepEqual(merged.mode.level1.type, "dog");
+        assert.deepEqual(merged.ghostMode.links, true);
+        assert.deepEqual(merged.ghostMode.forms.submit, true);
         assert.deepEqual(merged.log, false);
     });
 });

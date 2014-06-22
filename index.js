@@ -20,13 +20,13 @@ module.exports.merge = function merge(defaults, config, callbacks) {
         toMerge = commandLineArgs;
     }
 
-    var simpleMerged = _.merge(defaults, toMerge, function (a, b) {
+    var simpleMerged = _.merge(_.cloneDeep(defaults), toMerge, function (a, b) {
         return _.isArray(a) ? _.union(a, b) : undefined;
     });
 
     if (callbacks && Object.keys(callbacks).length) {
 
-        return exports.mergeOptions(defaults, config, callbacks);
+        return exports.mergeOptions(simpleMerged, config, callbacks);
 
     } else {
 
