@@ -9,12 +9,14 @@ module.exports.getArgs = function () {
     return args;
 };
 
-module.exports.merge = function merge(defaults, config, callbacks) {
+module.exports.merge = function merge(defaults, config, simple, callbacks) {
+
+    simple = simple || false;
 
     var toMerge;
     var commandLineArgs = exports.getArgs();
 
-    if (Object.keys(config).length) {
+    if (Object.keys(config).length || simple) {
         toMerge = config;
     } else {
         toMerge = commandLineArgs;
@@ -30,7 +32,9 @@ module.exports.merge = function merge(defaults, config, callbacks) {
 
     } else {
 
-        return _.merge(simpleMerged, commandLineArgs);
+        return simple
+            ? simpleMerged
+            : _.merge(simpleMerged, commandLineArgs);
 
     }
 };

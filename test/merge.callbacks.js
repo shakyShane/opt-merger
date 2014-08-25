@@ -49,7 +49,7 @@ describe("Merging opts", function(){
             "proxy": callbackFunc
         };
 
-        var merged = merge(defaults, opts, callbacks, ["proxy"]);
+        var merged = merge(defaults, opts, false, callbacks);
 
 
         assert.equal(merged.name, "shane"); // simple merge
@@ -76,7 +76,7 @@ describe("Merging opts", function(){
             "proxy": callbackFunc
         };
 
-        var merged = merge(defaultConf, {}, callbacks);
+        var merged = merge(defaultConf, {}, false, callbacks);
 
         assert.equal(merged.open, false);
 
@@ -100,7 +100,7 @@ describe("Merging opts", function(){
             "proxy": callbackFunc
         };
 
-        var merged = merge(defaultConf, {}, callbacks, ["proxy", "open"]);
+        var merged = merge(defaultConf, {}, false, callbacks);
 
 
         // simple merge DID NOT occur here, because this property was not in the 'allowed' array
@@ -121,7 +121,7 @@ describe("Merging opts", function(){
             proxy: "shane.local"
         });
 
-        var merged = merge(defaultConf, {}, {});
+        var merged = merge(defaultConf, {});
         assert.equal(merged.proxy, "shane.local");
 
     });
@@ -150,7 +150,7 @@ describe("Merging opts", function(){
             names: ["kittie"]
         };
 
-        var merged = merge(defaultConf, config, callbacks, ["proxy", "open"]);
+        var merged = merge(defaultConf, config, false, callbacks);
 
         // simple merge DID NOT occur here, because this property was not in the 'allowed' array
         assert.equal(merged.open, "fromFunc");
@@ -236,7 +236,7 @@ describe("Merging opts", function(){
             }
         };
 
-        var merged = merge(defaultConf, {}, funcs);
+        var merged = merge(defaultConf, {}, false, funcs);
 
         assert.equal(merged.proxy.host, "localhost");
         assert.equal(merged.proxy.port, "8000");
@@ -267,7 +267,7 @@ describe("Merging opts", function(){
             }
         };
 
-        var merged = merge(defaultConf, config, funcs);
+        var merged = merge(defaultConf, config, false, funcs);
 
         assert.deepEqual(merged.files, ["*.php", "!*.html"]);
     });
@@ -296,7 +296,7 @@ describe("Merging opts", function(){
             }
         };
 
-        var merged = merge(defaultConf, config, funcs);
+        var merged = merge(defaultConf, config, false, funcs);
 
         assert.deepEqual(merged.files, []);
     });
