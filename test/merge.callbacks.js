@@ -2,7 +2,7 @@
 
 var index  = require("../index");
 var merge  = index.merge;
-var assert = require("chai").assert;
+var assert = require("assert");
 var sinon  = require("sinon");
 
 var callbackFunc = function (defaultValue, newValue, args) {

@@ -2,7 +2,6 @@
 
 var _    = require("lodash");
 var args = require("optimist").argv;
-var argv = process.argv;
 
 
 module.exports.getArgs = function () {
