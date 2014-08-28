@@ -1,6 +1,6 @@
 {
   "name": "opt-merger",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Merge defaults opts with cli or api",
   "main": "index.js",
   "scripts": {
