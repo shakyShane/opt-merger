@@ -1,7 +1,7 @@
 "use strict";
 
 var merge  = require("../index").merge;
-var assert = require("chai").assert;
+var assert = require("assert");
 
 describe("Merging opts", function(){
 

@@ -1,9 +1,7 @@
 "use strict";
 
 var _    = require("lodash");
-var args = require("optimist").argv;
-var argv = process.argv;
-
+var args = require("minimist")(process.argv.slice(2));
 
 module.exports.getArgs = function () {
     return args;
