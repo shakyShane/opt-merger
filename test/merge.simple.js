@@ -1,5 +1,6 @@
 "use strict";
 
+var merger  = require("../index");
 var merge  = require("../index").merge;
 var assert = require("assert");
 
@@ -89,7 +90,7 @@ describe("Merging opts", function(){
             }
         };
 
-        var merged = merge(defaults, config, true);
+        var merged = merger.set({simple:true}).merge(defaults, config);
 
         assert.deepEqual(merged, {
             name: "kittie",
@@ -125,7 +126,7 @@ describe("Merging opts", function(){
             cb: function () {}
         };
 
-        var merged = merge(defaults, config, true);
+        var merged = merger.set({simple:true}).merge(defaults, config);
 
         merged.cb(done);
     });

@@ -1,7 +1,7 @@
 "use strict";
 
-var index  = require("../index");
-var merge  = index.merge;
+var merger  = require("../index");
+var merge  = merger.merge;
 var assert = require("assert");
 var sinon  = require("sinon");
 
@@ -20,7 +20,7 @@ describe("Merging opts", function(){
     var defaults, argsStub;
 
     before(function () {
-        argsStub = sinon.stub(index, "getArgs");
+        argsStub = sinon.stub(merger, "getArgs");
     });
     beforeEach(function () {
         defaults = {
@@ -49,7 +49,7 @@ describe("Merging opts", function(){
             "proxy": callbackFunc
         };
 
-        var merged = merge(defaults, opts, false, callbacks);
+        var merged = merge(defaults, opts, callbacks);
 
 
         assert.equal(merged.name, "shane"); // simple merge
@@ -76,7 +76,7 @@ describe("Merging opts", function(){
             "proxy": callbackFunc
         };
 
-        var merged = merge(defaultConf, {}, false, callbacks);
+        var merged = merge(defaultConf, {}, callbacks);
 
         assert.equal(merged.open, false);
 
@@ -100,7 +100,7 @@ describe("Merging opts", function(){
             "proxy": callbackFunc
         };
 
-        var merged = merge(defaultConf, {}, false, callbacks);
+        var merged = merge(defaultConf, {}, callbacks);
 
 
         // simple merge DID NOT occur here, because this property was not in the 'allowed' array
@@ -150,7 +150,7 @@ describe("Merging opts", function(){
             names: ["kittie"]
         };
 
-        var merged = merge(defaultConf, config, false, callbacks);
+        var merged = merge(defaultConf, config, callbacks);
 
         // simple merge DID NOT occur here, because this property was not in the 'allowed' array
         assert.equal(merged.open, "fromFunc");
@@ -236,7 +236,7 @@ describe("Merging opts", function(){
             }
         };
 
-        var merged = merge(defaultConf, {}, false, funcs);
+        var merged = merge(defaultConf, {}, funcs);
 
         assert.equal(merged.proxy.host, "localhost");
         assert.equal(merged.proxy.port, "8000");
@@ -267,7 +267,7 @@ describe("Merging opts", function(){
             }
         };
 
-        var merged = merge(defaultConf, config, false, funcs);
+        var merged = merge(defaultConf, config, funcs);
 
         assert.deepEqual(merged.files, ["*.php", "!*.html"]);
     });
@@ -296,9 +296,40 @@ describe("Merging opts", function(){
             }
         };
 
-        var merged = merge(defaultConf, config, false, funcs);
+        var merged = merge(defaultConf, config, funcs);
 
         assert.deepEqual(merged.files, []);
+    });
+    it("can ignore cli options", function () {
+
+        var defaultConf = {
+            files: "*.php"
+        };
+
+        argsStub.returns({
+            files: "*.css"
+        });
+
+        var config = {
+            files: "*.html",
+            hello: "kittie"
+        };
+
+        var funcs = {
+            "files": function (val1, val2, args) {
+                if (args.files) {
+                    return args.files;
+                } else {
+                    return val1;
+                }
+            }
+        };
+
+        var merged = merger
+            .set({ignoreCli: true})
+            .merge(defaultConf, config, funcs);
+
+        assert.deepEqual(merged.files, "*.html");
     });
 });
 
