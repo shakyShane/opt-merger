@@ -74,7 +74,7 @@ function merge(opts, defaults, config, callbacks) {
 
     if (callbacks && Object.keys(callbacks).length) {
 
-        return exports.mergeOptions(opts, simpleMerged, config, callbacks);
+        return exports.mergeOptions(opts, defaults, simpleMerged, config, callbacks);
 
     } else {
 
@@ -88,26 +88,25 @@ function merge(opts, defaults, config, callbacks) {
 /**
  * @returns {Object}
  */
-module.exports.mergeOptions = function (opts, defaults, config, callbacks) {
+module.exports.mergeOptions = function (opts, defaults, merged, config, callbacks) {
 
     var args = exports.getArgs();
 
     Object.keys(callbacks).forEach(function (item) {
 
-        // item == "files" etc
         var newValue;
 
-        if (args && typeof args[item] !== "undefined") {
+        if (!opts.ignoreCli && args && !_.isUndefined(args[item])) {
             newValue = args[item];
         } else {
             newValue = config[item];
         }
 
-        if (callbacks[item] && typeof defaults[item] !== "undefined") {
+        if (_.isFunction(callbacks[item]) && !_.isUndefined(defaults[item])) {
             // there's a callback, a default ARG & a newValue
-            defaults[item] = callbacks[item](defaults[item], newValue, opts.ignoreCli ? {} : args, config);
+            merged[item] = callbacks[item](defaults[item], merged[item], newValue, opts.ignoreCli ? undefined : args, config);
         }
     });
 
-    return defaults;
+    return merged;
 };

@@ -3,9 +3,10 @@
 var merger  = require("../index");
 var merge  = merger.merge;
 var assert = require("assert");
+var _ = require("lodash");
 var sinon  = require("sinon");
 
-var callbackFunc = function (defaultValue, newValue, args) {
+var callbackFunc = function (defaultValue, merged, newValue, args) {
 
     var split = newValue.split(":");
 
@@ -221,7 +222,7 @@ describe("Merging opts", function(){
 
         var funcs = {
 
-            "proxy": function (defaultValue, newValue, args) {
+            "proxy": function (defaultValue, merged, newValue, args) {
 
                 var proxy = {
                     host: "localhost",
@@ -255,9 +256,13 @@ describe("Merging opts", function(){
 
         var funcs = {
 
-            "files": function (defaultValue, newValue, args, config) {
+            "files": function (defaultValue, mergedVal, newValue, args, config) {
 
-                var returnArr = [newValue];
+                var returnArr = [];
+
+                if (_.isString(newValue)) {
+                    returnArr.push(newValue);
+                }
 
                 if (config && config.exclude) {
                     returnArr.push("!" + config.exclude)
@@ -270,35 +275,7 @@ describe("Merging opts", function(){
         var merged = merge(defaultConf, config, funcs);
 
         assert.deepEqual(merged.files, ["*.php", "!*.html"]);
-    });
-    it("Does NOT merge options from config if not provided, but callback provided", function () {
 
-        var defaultConf = {
-            files: []
-        };
-
-        var config = {};
-
-        var funcs = {
-
-            "files": function (defaultValue, newValue, args, config) {
-
-                if (!newValue) {
-                    return defaultValue;
-                }
-                var returnArr = [newValue];
-
-                if (config && config.exclude) {
-                    returnArr.push("!" + config.exclude)
-                }
-
-                return returnArr;
-            }
-        };
-
-        var merged = merge(defaultConf, config, funcs);
-
-        assert.deepEqual(merged.files, []);
     });
     it("can ignore cli options", function () {
 
@@ -316,11 +293,11 @@ describe("Merging opts", function(){
         };
 
         var funcs = {
-            "files": function (val1, val2, args) {
-                if (args.files) {
+            "files": function (defaultVal, merged, newval, args) {
+                if (args && args.files) {
                     return args.files;
                 } else {
-                    return val1;
+                    return merged;
                 }
             }
         };
@@ -330,6 +307,42 @@ describe("Merging opts", function(){
             .merge(defaultConf, config, funcs);
 
         assert.deepEqual(merged.files, "*.html");
+    });
+    it("can give correct info", function () {
+
+        var defaultConf = {
+            files: "*.php",
+            names: ["shane"]
+        };
+
+        argsStub.returns({
+            files: "*.css"
+        });
+
+        var config = {
+            files: "*.html",
+            names: ["osbourne"]
+        };
+
+        var funcs = {
+            "files": function (defaultVal, mergedVal, newVal, args) {
+                assert.equal(defaultVal, "*.php");
+                assert.equal(mergedVal,  "*.html");
+                assert.equal(newVal,     "*.html");
+                assert.equal(typeof args, "undefined");
+                if (args && args.files) {
+                    return args.files;
+                }
+                return mergedVal;
+            }
+        };
+
+        var merged = merger
+            .set({ignoreCli: true})
+            .merge(defaultConf, config, funcs);
+
+        assert.equal(merged.files, "*.html");
+        assert.deepEqual(merged.names, ["shane", "osbourne"]);
     });
 });
 
