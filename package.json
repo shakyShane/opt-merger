@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/shakyShane/opt-merger",
   "dependencies": {
-    "lodash": "^2.4.1",
+    "lodash": "^3.10.1",
     "minimist": "^1.1.0"
   },
   "devDependencies": {
